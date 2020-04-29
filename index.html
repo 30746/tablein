@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <style>
+        .selected {
+            background-color: lightblue;
+        }
+
+        table {
+            width: 100%;
+            border: 1px solid lightgray;
+            table-layout: fixed;
+        }
+
+        td {
+            cursor: pointer;
+            border: 1px solid lightgray;
+        }
+        td input {
+            display: none;
+        }
+
+        input {
+            width: 100%;
+            height: 100%;
+        }
+
+        .cell.editable input {
+            display: block;
+        }
+
+        .cell.editable span {
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+
+<table id="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Game</th>
+        </tr>
+    </thead>
+</table>
+
+<script>
+
+    window.addEventListener('load', () => {
+        renderTable()
+    })
+
+    const data = [
+        {id: 0, name: "John", game: 'PUBG'},
+        {id: 1, name: "Polly", game: 'WOT'},
+        {id: 2, name: "Jimmy", game: 'CS'},
+        {id: 3, name: "Daria", game: "WOW"}
+    ]
+
+    const createRow = () => {
+        const row = document.createElement('tr')
+        return row
+    }
+
+    const createCell = (content) => {
+        const cell = document.createElement('td')
+        const label = document.createElement('span')
+        label.innerHTML = content
+        cell.appendChild(label)
+        cell.classList.add('cell')
+        return cell
+    }
+
+    const createInput = (content) => {
+        const input = document.createElement('input')
+        input.type = "text"
+        input.value = content
+        return input
+    }
+
+    const renderTable = () => {
+
+        const table = document.querySelector('#table')
+
+        data.map((item) => {
+
+            const row = createRow()
+
+            const nameCell = createCell(item.name)
+            const nameInput = createInput(item.name)
+
+            nameCell.appendChild(nameInput)
+
+            nameCell.addEventListener('click', (event) => {
+                editCell(event)
+            })
+
+            nameInput.addEventListener('keyup', (event) => {
+                changeData(event, item.id, "name")
+                nameCell.getElementsByTagName('span')[0].innerHTML = event.target.value
+            })
+
+            const gameCell = createCell(item.game)
+            const gameInput = createInput(item.game)
+
+            gameInput.addEventListener('keyup', (event) => {
+                changeData(event, item.id, "game")
+                gameCell.getElementsByTagName('span')[0].innerHTML = event.target.value
+            })
+
+            gameCell.appendChild(gameInput)
+
+            gameCell.addEventListener('click', (event) => {
+                editCell(event)
+            })
+
+            row.appendChild(nameCell)
+            row.appendChild(gameCell)
+
+            table.appendChild(row)
+
+        })
+    }
+
+    const editCell = (event) => {
+
+        const selectedCell = event.target
+
+        if (selectedCell.classList.contains('cell')) {
+            const cells = document.querySelectorAll('td')
+
+            cells.forEach((cell) => {
+                cell.classList.remove('editable')
+            })
+
+            selectedCell.classList.add('editable')
+
+            selectedCell.getElementsByTagName('input')[0].focus()
+        }
+
+    }
+
+    const changeData = (event, objectID, propName) => {
+        const input = event.target
+        const item = data.find(item => {
+            return item.id === objectID
+        })
+        console.log(item)
+        item[propName] = input.value
+        console.log(item)
+    }
+
+</script>
+</body>
+</html>
